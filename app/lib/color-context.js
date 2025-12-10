@@ -1,16 +1,31 @@
 'use client'
 
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react'
 import { swatchArray, swatchArrayAll } from './colors/swatches'
 
 const ColorContext = createContext()
 
+// Throttle function for resize handler
+function throttle(func, wait) {
+  let timeout
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout)
+      func(...args)
+    }
+    clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
+  }
+}
+
 export function ColorProvider({ children }) {
-  const [colorData, setColorData] = useState({
+  // Memoize color data since it never changes
+  const colorData = useMemo(() => ({
     color_list: swatchArray || [],
     color_list_flat: swatchArrayAll || [],
     color_state: null
-  })
+  }), [])
+
   const [windowWidth, setWindowWidth] = useState(
     typeof window !== 'undefined' ? window.innerWidth : 1920
   )
@@ -20,20 +35,29 @@ export function ColorProvider({ children }) {
     if (typeof window === 'undefined') return
     
     // Set initial window width
-    const handleResize = () => {
+    const updateWidth = () => {
       setWindowWidth(window.innerWidth)
     }
     
-    handleResize()
-    window.addEventListener('resize', handleResize)
+    // Throttle resize handler to improve performance
+    const handleResize = throttle(updateWidth, 100)
     
-    // Load fonts
-    const link = document.createElement('link')
-    link.rel = 'stylesheet'
-    link.href = '/assets/fonts.css'
-    document.head.appendChild(link)
+    updateWidth()
+    window.addEventListener('resize', handleResize, { passive: true })
     
-    link.onload = () => {
+    // Load fonts with preload for better performance
+    const existingLink = document.querySelector('link[href="/assets/fonts.css"]')
+    if (!existingLink) {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = '/assets/fonts.css'
+      link.media = 'print'
+      link.onload = () => {
+        link.media = 'all'
+        setFontsLoaded(true)
+      }
+      document.head.appendChild(link)
+    } else {
       setFontsLoaded(true)
     }
 
@@ -42,12 +66,15 @@ export function ColorProvider({ children }) {
     }
   }, [])
 
+  // Memoize context value to prevent unnecessary re-renders
+  const contextValue = useMemo(() => ({
+    colorData,
+    windowWidth,
+    fontsLoaded
+  }), [colorData, windowWidth, fontsLoaded])
+
   return (
-    <ColorContext.Provider value={{
-      colorData,
-      windowWidth,
-      fontsLoaded
-    }}>
+    <ColorContext.Provider value={contextValue}>
       {children}
     </ColorContext.Provider>
   )

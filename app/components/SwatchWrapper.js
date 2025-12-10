@@ -1,7 +1,7 @@
 'use client'
 
 import styled from 'styled-components'
-import { colors, spacing, shared } from '../styles/theme.json'
+import { colors, spacing, shared } from '../styles/theme'
 import { flexRowCenteredVert, Section, H2 } from '../styles'
 
 export default function SwatchWrapper({ indexNo, children }) {

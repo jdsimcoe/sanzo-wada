@@ -6,7 +6,7 @@ import styled from 'styled-components'
 import { useColorContext } from '../../lib/color-context'
 import { SwatchHeader, CopyHex } from '../../components'
 import { flexRow, SwatchLink, ComboTitle, ComboHex, ButtonLink, media } from '../../styles'
-import { spacing, shared } from '../../styles/theme.json'
+import { spacing, shared } from '../../styles/theme'
 
 export default function CombinationPage() {
   const params = useParams()
@@ -31,6 +31,25 @@ export default function CombinationPage() {
     return colorList
   }, [colorData, slug])
 
+  // Memoize hex components and color bars
+  const hexComponents = useMemo(
+    () => colors.map((color, i) => (
+      <CopyHex hex={color.hex} key={`${params.slug}-hex-${color.slug}`}/>
+    )),
+    [colors, params.slug]
+  )
+
+  const colorBars = useMemo(
+    () => colors.map((color) => (
+      <ColorBar key={`${params.slug}-${color.slug}`} style={{ backgroundColor: color.hex }}>
+        <SwatchLink href={`/swatch/${color.slug}`} hex={color.hex}>
+          <p className={'name'}>{color.name}</p>
+        </SwatchLink>
+      </ColorBar>
+    )),
+    [colors, params.slug]
+  )
+
   if (!colors || colors.length === 0) {
     return (
       <div style={{ padding: '2rem' }}>
@@ -45,9 +64,7 @@ export default function CombinationPage() {
       <SwatchHeader>
         <ComboTitle>Combination: {params.slug}</ComboTitle>
         <ComboHex>
-          {colors.map((color, i) =>
-            <CopyHex hex={color.hex} key={`${params.slug}-title-${i}`}/>
-          )}
+          {hexComponents}
         </ComboHex>
         <PrevNext>
           {slug !== 1 && (
@@ -56,7 +73,7 @@ export default function CombinationPage() {
             </ButtonLink>
           )}
           {slug !== 348 && (
-            <ButtonLink className="next" href={`/combination/${parseInt(slug, 10) + 1}`}>
+            <ButtonLink className="next" href={`/combination/${slug + 1}`}>
               <span>Next</span>
             </ButtonLink>
           )}
@@ -64,13 +81,7 @@ export default function CombinationPage() {
       </SwatchHeader>
       <ComboSection>
         <ComboWrapper>
-          {colors.map((color, i) =>
-            <ColorBar key={`${params.slug}-${i}`} style={{ backgroundColor: color.hex }}>
-              <SwatchLink href={`/swatch/${color.slug}`} hex={color.hex}>
-                <p className={'name'}>{color.name}</p>
-              </SwatchLink>
-            </ColorBar>
-          )}
+          {colorBars}
         </ComboWrapper>
       </ComboSection>
     </>

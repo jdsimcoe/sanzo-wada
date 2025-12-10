@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { mediumType, media, animationFadeUp, smallType } from '../styles'
-import { spacing } from '../styles/theme.json'
+import { spacing } from '../styles/theme'
 
 export default function CopyHex({ hex }) {
   const [copied, setCopied] = useState(false)

@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import styled, { css, keyframes } from 'styled-components'
 import chroma from 'chroma-js'
-import { spacing, fonts, shared, breakpoints, colors } from './theme.json'
+import { spacing, fonts, shared, breakpoints, colors } from './theme'
 
 // Media Queries
 const media = {

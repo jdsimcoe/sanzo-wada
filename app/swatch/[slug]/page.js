@@ -7,7 +7,7 @@ import chroma from 'chroma-js'
 import { useColorContext } from '../../lib/color-context'
 import { SwatchHeader, CopyHex } from '../../components'
 import { flexColumn, ComboLink, ComboHex, bigType, ComboTitle } from '../../styles'
-import { spacing, colors, shared } from '../../styles/theme.json'
+import { spacing, colors, shared } from '../../styles/theme'
 
 export default function SwatchPage() {
   const params = useParams()
@@ -19,6 +19,16 @@ export default function SwatchPage() {
     }
     return colorData.color_list_flat.find(s => s.slug === params.slug)
   }, [colorData, params.slug])
+
+  // Memoize combinations list to prevent re-renders
+  const combinations = useMemo(() => {
+    if (!swatch || !swatch.combinations) return []
+    return swatch.combinations.map((combo) => (
+      <ComboLink href={`/combination/${combo}`} key={`${swatch.slug}-${combo}`} hex={swatch.hex}>
+        {combo}
+      </ComboLink>
+    ))
+  }, [swatch])
 
   if (!swatch) {
     return (
@@ -43,9 +53,7 @@ export default function SwatchPage() {
         <ContentWrapper>
           <ComboHeader><span>Combinations:</span></ComboHeader>
           <ComboList>
-            {swatch.combinations && swatch.combinations.map((combo, i) =>
-              <ComboLink href={`/combination/${combo}`} key={`${swatch.slug}-${combo}`} hex={swatch.hex}>{combo}</ComboLink>
-            )}
+            {combinations}
           </ComboList>
         </ContentWrapper>
       </SwatchSection>
