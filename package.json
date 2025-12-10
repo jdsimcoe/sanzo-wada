@@ -4,29 +4,34 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev:alpha": "pnpm cd apps/sanzo-wada-alpha && turbo run dev",
-    "build:alpha": "pnpm cd apps/sanzo-wada-alpha && turbo run build",
-    "preinstall": "npx only-allow pnpm",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
     "prepare": "husky install",
-    "clean": "turbo run clean && rm -rf node_modules"
+    "clean": "rm -rf .next node_modules"
   },
   "author": "Dain Blodorn Kim",
   "license": "MIT",
   "engines": {
     "node": ">=20"
   },
-  "devDependencies": {
-    "eslint": "^9.5.0",
-    "husky": "^9.0.11",
-    "prettier": "^3.3.2",
-    "turbo": "^2.0.5"
+  "dependencies": {
+    "chroma-js": "^3.2.0",
+    "lodash": "^4.17.21",
+    "next": "^15.1.6",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
+    "styled-components": "^6.1.19"
   },
-  "packageManager": "pnpm@8.15.3",
+  "devDependencies": {
+    "eslint": "^9.39.1",
+    "eslint-config-next": "^15.1.6",
+    "husky": "^9.1.7",
+    "prettier": "^3.7.4"
+  },
   "lint-staged": {
-    "apps/**/*.{js,ts,jsx,tsx}": [
-      "prettier --write"
-    ],
-    "packages/**/*.{js,ts,jsx,tsx}": [
+    "app/**/*.{js,ts,jsx,tsx}": [
       "prettier --write"
     ],
     "*.json": [
