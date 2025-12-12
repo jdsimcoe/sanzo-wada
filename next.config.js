@@ -1,5 +1,3 @@
-const path = require('path')
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -7,8 +5,6 @@ const nextConfig = {
   compiler: {
     styledComponents: true,
   },
-  // Explicitly set the workspace root to silence the warning
-  outputFileTracingRoot: path.join(__dirname),
 }
 
 module.exports = nextConfig

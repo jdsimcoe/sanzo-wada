@@ -3,7 +3,7 @@
 import styled from 'styled-components'
 import { SwatchHeader, Title } from '../components'
 import { Section, lgBodyCopy, mediumType } from '../styles'
-import { spacing, colors } from '../styles/theme'
+import { spacing, colors } from '../styles/theme.json'
 
 const copy = `
 <h2>Wada Sanzō <span lang="ja-jp">和田 三造</span></h2>

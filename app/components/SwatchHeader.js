@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import styled from 'styled-components'
-import { spacing, colors, shared } from '../styles/theme'
+import { spacing, colors, shared } from '../styles/theme.json'
 import { flexRowCenteredVert, ButtonLink, flexRow, flexColumn, media } from '../styles'
 
 export default function SwatchHeader({ children }) {

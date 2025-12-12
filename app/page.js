@@ -1,36 +1,15 @@
 'use client'
 
-import { useState, useCallback, useMemo, lazy, Suspense } from 'react'
+import { useState } from 'react'
 import styled from 'styled-components'
 import { useColorContext } from './lib/color-context'
-import { ColorSwatches, Title } from './components'
+import { ColorSwatches, ColorTable, Title } from './components'
 import { flexRow, StyledButton, media, ButtonHref, ButtonLink, flexColumn } from './styles'
-import { colors, spacing, shared, breakpoints } from './styles/theme'
-
-// Lazy load ColorTable since it's conditionally rendered
-const ColorTable = lazy(() => import('./components/ColorTable').then(module => ({ default: module.default })))
+import { colors, spacing, shared, breakpoints } from './styles/theme.json'
 
 export default function Landing() {
   const { colorData, windowWidth } = useColorContext()
   const [table, setTable] = useState(false)
-
-  // Memoize callbacks to prevent re-renders
-  const handleSwatchView = useCallback(() => setTable(false), [])
-  const handleListView = useCallback(() => setTable(true), [])
-
-  // Memoize text content based on window width
-  const swatchButtonText = useMemo(
-    () => (windowWidth >= breakpoints.desktop) ? 'Swatch View' : 'Swatches',
-    [windowWidth]
-  )
-  const listButtonText = useMemo(
-    () => (windowWidth >= breakpoints.desktop) ? 'List View' : 'List',
-    [windowWidth]
-  )
-  const showApiText = useMemo(
-    () => windowWidth >= breakpoints.desktop,
-    [windowWidth]
-  )
 
   // Safety check for data
   if (!colorData || !colorData.color_list || !colorData.color_list_flat) {
@@ -46,27 +25,24 @@ export default function Landing() {
       <StyleMenu>
         <Title/>
         <ButtonWrapper>
-          <StyledButton onClick={handleSwatchView} className={(!table) && 'active'}>
-            <span>{swatchButtonText}</span>
+          <StyledButton onClick={() => setTable(false)} className={(!table) && 'active'}>
+            <span>{(windowWidth >= breakpoints.desktop) ? `Swatch View` : `Swatches`}</span>
           </StyledButton>
-          <StyledButton onClick={handleListView} className={(table) && 'active'}>
-            <span>{listButtonText}</span>
+          <StyledButton onClick={() => setTable(true)} className={(table) && 'active'}>
+            <span>{(windowWidth >= breakpoints.desktop) ? `List View` : `List`}</span>
           </StyledButton>
           <ButtonHref href="/assets/colors.json">
-            <span>JSON {showApiText && 'API'}</span>
+            <span>JSON {(windowWidth >= breakpoints.desktop) && `API`}</span>
           </ButtonHref>
           <ButtonLink href={'/about'}>
             <span>ABOUT</span>
           </ButtonLink>
         </ButtonWrapper>
       </StyleMenu>
-      {table ? (
-        <Suspense fallback={<div>Loading table...</div>}>
-          <ColorTable colorList={colorData.color_list_flat || []} breakPoint={windowWidth}/>
-        </Suspense>
-      ) : (
-        <ColorSwatches colorList={colorData.color_list || []}/>
-      )}
+      {(table) 
+        ? <ColorTable colorList={colorData.color_list_flat || []} breakPoint={windowWidth}/>
+        : <ColorSwatches colorList={colorData.color_list || []}/>
+      }
     </Main>
   )
 }

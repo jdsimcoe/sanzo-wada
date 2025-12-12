@@ -1,51 +1,47 @@
 'use client'
 
-import { memo, useMemo } from 'react'
 import styled from 'styled-components'
 import SwatchWrapper from './SwatchWrapper'
-import { colors, spacing } from '../styles/theme'
+import { colors, spacing } from '../styles/theme.json'
 import { smallType, flexRowWrap, flexRow, media, SwatchLink } from '../styles'
 
-// Memoize style function
-const returnStyle = (color) => ({
-  backgroundColor: color
-})
+const returnStyle = (color) => {
+  return {
+    backgroundColor: color
+  }
+}
 
-const Swatches = memo(function Swatches({ colorList, indexNo }) {
+function Swatches({ colorList, indexNo }) {
   return (
     <SwatchWrapper indexNo={indexNo}>
       <SwatchBook>
-        {colorList.map((color) => (
-          <Swatch key={`c-list-${color.index}-${color.slug}`} style={returnStyle(color.hex)}>
+        {colorList.map((color, i) =>
+          <Swatch key={`c-list_${color.index}-${i}`} style={returnStyle(color.hex)}>
             <SwatchLink href={`/swatch/${color.slug}`} hex={color.hex}>
               <p className={'index'}>{color.index}</p>
               <p className={'name'}>{color.name}</p>
               <p className={'hex'}>{color.hex}</p>
             </SwatchLink>
           </Swatch>
-        ))}
+        )}
       </SwatchBook>
     </SwatchWrapper>
   )
-})
+}
 
-function ColorSwatches({ colorList }) {
+export default function ColorSwatches({ colorList }) {
   if (!colorList || !Array.isArray(colorList) || colorList.length === 0) {
     return null
   }
 
-  // Memoize the mapped components
-  const swatchComponents = useMemo(
-    () => colorList.map((colors, i) => (
-      <Swatches colorList={colors.swatches || []} indexNo={i} key={`cs-${i}`}/>
-    )),
-    [colorList]
+  return (
+    <>
+      {colorList.map((colors, i) =>
+        <Swatches colorList={colors.swatches || []} indexNo={i} key={`cs_${i}`}/>
+      )}
+    </>
   )
-
-  return <>{swatchComponents}</>
 }
-
-export default memo(ColorSwatches)
 
 // STYLES
 const SwatchBook = styled.ul`

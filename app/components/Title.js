@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import styled from 'styled-components'
 import { H1, media } from '../styles'
-import { spacing, shared } from '../styles/theme'
+import { spacing, shared } from '../styles/theme.json'
 
 export default function Title() {
   return (

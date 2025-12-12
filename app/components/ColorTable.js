@@ -1,64 +1,52 @@
 'use client'
 
-import { memo, useMemo } from 'react'
 import styled from 'styled-components'
 import chroma from 'chroma-js'
-import { colors, breakpoints } from '../styles/theme'
+import { colors, breakpoints } from '../styles/theme.json'
 import { smallType, SmallLink } from '../styles'
 
-// Memoize style function
-const returnStyle = (color) => ({
-  backgroundColor: color
-})
+const returnStyle = (color) => {
+  return {
+    backgroundColor: color
+  }
+}
 
-function ColorTable({ colorList, breakPoint }) {
+export default function ColorTable({ colorList, breakPoint }) {
   if (!colorList || !Array.isArray(colorList) || colorList.length === 0) {
     return null
   }
 
-  const isDesktop = breakPoint >= breakpoints.desktop
-
-  // Memoize table rows to prevent unnecessary re-renders
-  const tableRows = useMemo(
-    () => colorList.map((color) => (
-      <ColorTr key={`c-list-${color.index}-${color.slug}`} style={returnStyle(color.hex)} $hex={color.hex}>
-        <td>{color.index}</td>
-        <td>
-          <SmallLink href={`/swatch/${color.slug}`}>{color.name}</SmallLink>
-        </td>
-        <td className={'captialize'}>{color.hex}</td>
-        {isDesktop && (
-          <>
-            <td>
-              {color.combinations && color.combinations.map((combo) => 
-                <SmallLink href={`/combination/${combo}`} key={`${combo}-${color.slug}`}>{combo}</SmallLink>
-              )}
-            </td>
-            <td>{color.cmyk}</td>
-            <td>{color.rgb}</td>
-            <td>{color.use_count}</td>
-          </>
-        )}
-      </ColorTr>
-    )),
-    [colorList, isDesktop]
-  )
-
   return (
     <ColorIndex>
       <tbody>
-        {tableRows}
+        {colorList.map((color, i) =>
+          <ColorTr key={`c-list_${color.index}-${i}`} style={returnStyle(color.hex)} hex={color.hex}>
+            <td>{color.index}</td>
+            <td>
+              <SmallLink href={`/swatch/${color.slug}`}>{color.name}</SmallLink>
+            </td>
+            <td className={'captialize'}>{color.hex}</td>
+            {(breakPoint >= breakpoints.desktop) &&
+              <>
+                <td>
+                  {color.combinations && color.combinations.map((combo, i) => 
+                    <SmallLink href={`/combination/${combo}`} key={`${combo}-${i}`}>{combo}</SmallLink>
+                  )}
+                </td>
+                <td>{color.cmyk}</td>
+                <td>{color.rgb}</td>
+                <td>{color.use_count}</td>
+              </>
+            }
+          </ColorTr>
+        )}
       </tbody>
     </ColorIndex>
   )
 }
 
-export default memo(ColorTable)
-
 // STYLES
-const ColorTr = styled.tr.withConfig({
-  shouldForwardProp: (prop) => prop !== 'hex',
-})`
+const ColorTr = styled.tr`
   th {
     border-right: 1px solid ${colors.grey};
     padding: 1rem;
@@ -83,7 +71,7 @@ const ColorTr = styled.tr.withConfig({
   }
   * {
     color: ${(props) =>
-      chroma.contrast(props.$hex, colors.grey) > 2 ? colors.grey : colors.black}!important;
+      chroma.contrast(props.hex, colors.grey) > 2 ? colors.grey : colors.black}!important;
   }
 `
 
